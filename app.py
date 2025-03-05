@@ -1,7 +1,5 @@
 import streamlit as st
 import re
-import secrets
-import string
 
 def calculate_password_strength(password):
     score = 0
@@ -44,25 +42,6 @@ def calculate_password_strength(password):
     
     return score, strength, color, feedback
 
-def generate_strong_password(length=12):
-    uppercase = string.ascii_uppercase
-    lowercase = string.ascii_lowercase
-    digits = string.digits
-    special_chars = string.punctuation
-
-    password = [
-        secrets.choice(uppercase),
-        secrets.choice(lowercase),
-        secrets.choice(digits),
-        secrets.choice(special_chars)
-    ]
-
-    for _ in range(length - 4):
-        password.append(secrets.choice(uppercase + lowercase + digits + special_chars))
-
-    secrets.SystemRandom().shuffle(password)
-    return ''.join(password)
-
 def main():
     st.markdown(
         f"""
@@ -103,31 +82,26 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Form container
-    st.markdown('<div class="title">🔐Password Strength Generator</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">🔐 Password Strength Checker</div>', unsafe_allow_html=True)
     
     password = st.text_input("Enter your password", type="password")
     
-    if st.button("Generate Strong Password"):
-        generated_password = generate_strong_password()
-        st.text_input("Generated Password", value=generated_password, type="password")
-        password = generated_password
-    
-    if password:
-        score, strength, color, feedback = calculate_password_strength(password)
-        
-        st.progress(score * 20)
-        
-        st.markdown(f'<h3 style="color:{color};">{strength} Password</h3>', unsafe_allow_html=True)
-        
-        if feedback:
-            st.markdown("**Suggestions to Improve:**")
-            for suggestion in feedback:
-                st.markdown(f"❌ {suggestion}")
+    if st.button("Generate  Password"):
+        if password:
+            score, strength, color, feedback = calculate_password_strength(password)
+            
+            st.progress(score * 20)
+            
+            st.markdown(f'<h3 style="color:{color};">{strength} Password</h3>', unsafe_allow_html=True)
+            
+            if feedback:
+                st.markdown("**Suggestions to Improve:**")
+                for suggestion in feedback:
+                    st.markdown(f"❌ {suggestion}")
+            else:
+                st.markdown("✅ Strong password! You're all set.")
         else:
-            st.markdown("✅ Strong password! You're all set.")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+            st.error("Please enter a password first.")
 
 if __name__ == "__main__":
     main()
